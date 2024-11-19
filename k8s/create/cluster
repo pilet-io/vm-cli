@@ -46,4 +46,4 @@ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 
 helm repo add traefik https://traefik.github.io/charts
 helm repo update
-helm install traefik traefik/traefik
+helm install -n kube-system traefik traefik/traefik
