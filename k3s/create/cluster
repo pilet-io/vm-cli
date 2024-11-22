@@ -2,4 +2,4 @@
 
 #>
 
-curl -sfL https://get.k3s.io | sh -
+/root/cli/scripts/k3s-install.sh
