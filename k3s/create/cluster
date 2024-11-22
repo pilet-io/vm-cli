@@ -1,5 +1,0 @@
-#!/bin/bash
-
-#>
-
-/root/cli/scripts/k3s-install.sh

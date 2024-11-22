@@ -1,5 +1,0 @@
-#!/bin/bash
-
-#> [master]=? [token]=?
-
-curl -sfL https://get.k3s.io | K3S_URL=https://${MASTER}:6443 K3S_TOKEN=${TOKEN} sh -
