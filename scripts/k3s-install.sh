@@ -2,6 +2,7 @@
 set -e
 set -o noglob
 
+
 GITHUB_URL=https://github.com/k3s-io/k3s/releases
 GITHUB_PR_URL=""
 STORAGE_URL=https://k3s-ci-builds.s3.amazonaws.com
