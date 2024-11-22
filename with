@@ -96,7 +96,7 @@ if [ "$WITH_TRACE" = "yes" ]; then
   span_start "$WITH_COMMAND" VAR
 fi
 
-bash <(cat $SNIP_FILE | envsubst "$KNOWN_VARS" | sed 's|#!/bin/bash|source ~/cli/.include/all|g')
+bash <(cat $SNIP_FILE | envsubst "$KNOWN_VARS")
 
 if [ "$WITH_TRACE" = "yes" ]; then
   span_end
