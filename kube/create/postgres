@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#> [ns]=postgres [disk]=100
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+#helm repo update
+
+cat <<EOF > /tmp/values.yaml
+global:
+  postgresql:
+    auth:
+      postgresPassword: par0l2010
+persistence:
+  size: ${DISK}Gi
+EOF
+
+helm upgrade --install pg --namespace $NS --create-namespace --values /tmp/values.yaml bitnami/postgresql
