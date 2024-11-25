@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#> [ns]=kafka [name]=main [disk]=100 [replicas]=3
+#> [ns]=kafka [name]=main [disk]=100 [replicas]=1
 
 kubectl create ns $NS
 kubectl create -f "https://strimzi.io/install/latest?namespace=$NS" -n $NS
 
-sleep 60s
+sleep 20s
 
 cat <<EOF | kubectl apply -n $NS -f -
 apiVersion: kafka.strimzi.io/v1beta2
