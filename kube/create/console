@@ -3,8 +3,6 @@
 #> [ns]=tools
 
 kubectl create ns $NS
-with kube configure docker --ns $NS
-
 cat<<EOF | kubectl apply -n $NS -f -
 apiVersion: v1
 kind: Pod
