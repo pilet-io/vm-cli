@@ -19,5 +19,5 @@ spec:
     securityContext:
       privileged: true
     imagePullPolicy: IfNotPresent
-  restartPolicy: Always\
+  restartPolicy: Always
 EOF
