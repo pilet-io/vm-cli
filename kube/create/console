@@ -31,8 +31,6 @@ spec:
     - name: script-volume
       mountPath: /script
     command: ["/script/init-script.sh"]
-  imagePullSecrets:
-  - name: dockersec
   volumes:
   - name: script-volume
     configMap:
