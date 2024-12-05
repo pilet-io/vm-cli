@@ -1,0 +1,89 @@
+#!/bin/bash
+
+#> [ns]=tools
+
+kubectl create ns $NS
+with kube configure docker --ns $NS
+
+cat<<EOF | kubectl apply -n $NS -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-script
+data:
+  init-script.sh: |
+    #!/bin/bash
+
+    apt update
+    apt install -y nano curl jq iputils-ping dnsutils openjdk-17-jre wget openssh-server git
+
+    echo "-- installed updates --"
+
+    cat >> /root/.profile <<EOF
+    export PATH=\$PATH:~/cli
+    export PGPASSWORD=9ad808399723e7b899d89c8682f058c7
+    EOF
+
+    mkdir -p /root/.ssh
+    cat > /root/.ssh/authorized_keys <<EOF
+    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDussHOoOnwHJkYHG5D/VCfskS3qF0CND4R3Hc9eBQZAx0TVgWuSGD0spzLxKyldVd4bgHXantm1N54kouweMcBgUMTYya07hrrBZFZW4OjloEEKCEfMIYf5KqovZuzEByK9QvJRjrmTuwJYzzenk9+M/YPcyyBJLzmzcTbbIRy4pZcezuEP/5nP5b7OcqHHhavAbQ8j16yMg8CwP5noyhPELAEMWEdRd2m4d4hz+ttopxerYhvOtimmequaOujcX/oGxajkTGV+zbxtEHV/EVs9beO7sAeUsHu265r8VMNRypYjw6WxdZR6/kdVXpMZWUvXmVyOyVoE7AwcWDoXmS8RACB8lypV7e5AbTF4kSQNTXbRRPjwQxt27VfZVpViE1d6Kya++hnKpU9OCOf9Gr95uMvwthSTEkq/YY21CQWhrRJI3TbpnHuzJYrXU3zYzGxqQCcmNm8P25NVw9Esqv+f61+w0Xc2oTxmw8l5qIUVunK297aAowPUGmNFtYTCF8= apotapov@PS-DOCKER-RF2
+    EOF
+
+    cat >> /etc/ssh/sshd_config <<EOF
+    PermitRootLogin yes
+    Port 22
+    ListenAddress 0.0.0.0
+    EOF
+
+    service ssh restart
+
+    apt update
+    apt install ca-certificates curl
+    sleep infinity
+EOF
+
+
+cat <<EOF | kubectl apply -n $NS -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: console
+  labels:
+    app: console
+spec:
+  containers:
+  - name: console
+    image: ubuntu:22.04
+    securityContext:
+      privileged: true
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 22
+    volumeMounts:
+    - name: script-volume
+      mountPath: /script
+    command: ["/script/init-script.sh"]
+  imagePullSecrets:
+  - name: dockersec
+  volumes:
+  - name: script-volume
+    configMap:
+      name: init-script
+      defaultMode: 0744
+  restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: console
+spec:
+  type: NodePort
+  ports:
+  - port: 22
+    nodePort: 30022
+    protocol: TCP
+  selector:
+    app: console
+EOF
+
+
