@@ -6,15 +6,6 @@ kubectl create ns $NS
 
 cat<<EOF | kubectl apply -n $NS -f -
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: init-script
-data:
-  init-script.sh: |
-    #!/bin/bash
-    sleep infinity
----
-apiVersion: v1
 kind: Pod
 metadata:
   name: console
@@ -25,17 +16,6 @@ spec:
   - name: console
     image: busybox
     imagePullPolicy: IfNotPresent
-    ports:
-    - containerPort: 22
-    volumeMounts:
-    - name: script-volume
-      mountPath: /script
-    command: ["/script/init-script.sh"]
-  volumes:
-  - name: script-volume
-    configMap:
-      name: init-script
-      defaultMode: 0744
   restartPolicy: Always
 EOF
 
