@@ -15,8 +15,10 @@ spec:
   containers:
   - name: console
     image: busybox
-    imagePullPolicy: IfNotPresent
-  restartPolicy: Always
+    args:
+      - /bin/sh
+      - -c
+      - sleep 3600s
 EOF
 
 
