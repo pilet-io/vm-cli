@@ -2,6 +2,7 @@
 
 #> [ns]=redis
 
+kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
 cat <<EOF | kubectl apply -n $NS -f -
 ---
 apiVersion: apps/v1
