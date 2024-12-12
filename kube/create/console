@@ -18,7 +18,7 @@ spec:
     args:
       - /bin/sh
       - -c
-      - sleep 3600s
+      - while :; do sleep 2073600; done
 EOF
 
 
