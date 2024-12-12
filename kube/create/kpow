@@ -1,0 +1,70 @@
+#!/bin/bash
+
+#> [ns]=kpow
+
+kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
+cat <<EOF | kubectl apply -n $NS -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kpow
+  labels:
+    app: kpow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kpow
+
+  template:
+    metadata:
+      labels:
+        app: kpow
+    spec:
+      containers:
+      - name: kpow
+        image: factorhouse/kpow-ce:latest
+        env:
+        - name: LICENSE_ID
+          value: 52fc0518-d4aa-48cc-a90d-d12bfb597122
+        - name: LICENSE_CODE
+          value: KPOW_COMMUNITY
+        - name: LICENSEE
+          value: Alex Potapov
+        - name: LICENSE_EXPIRY
+          value: 2024-08-07
+        - name: LICENSE_SIGNATURE
+          value: 04FC24819E8D57A74FEF3B71878752D62D0040F069CD27D3AD0F614285E4FD33B86C88B31D63C937E00D7CD2E13F642A18C8946A41631A2555DFB8FD86E36158EEE1948E37CE71C5DE75DE5C788126665F9F2D59095395D0A0045BE001C7C8F166CE0D5460EB3DD2D77DE97331B2D9990A2ECA6ECC4CBFE41BB851A1CA2AFD09
+        - name: BOOTSTRAP
+          value: main-kafka-bootstrap.kafka:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kpow
+spec:
+  type: ClusterIP
+  ports:
+  - name: webui
+    port: 3000
+    targetPort: 3000
+  selector:
+    app: kpow
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kpow
+spec:
+  rules:
+  - http:
+      paths:
+      - path: "/kpow"
+        pathType: Prefix
+        backend:
+          service:
+            name: kpow
+            port:
+              number: 3000
+EOF
+
