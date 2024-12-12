@@ -14,7 +14,7 @@ metadata:
 spec:
   containers:
   - name: console
-    image: busybox
+    image: ubuntu:24.04
     args:
       - /bin/sh
       - -c
