@@ -51,10 +51,21 @@ spec:
   selector:
     app: kpow
 ---
+kind: Middleware
+apiVersion: traefik.containo.us/v1alpha1
+metadata:
+  name: path-prefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /kpow
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kpow
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: path-prefix@kubernatescrd
 spec:
   rules:
   - http:
