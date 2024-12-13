@@ -65,11 +65,9 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: kpow-route
-
 spec:
   entryPoints:
   - web
-
   routes:
   - match: PathPrefix(`/kpow`)
     kind: Rule
