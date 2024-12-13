@@ -64,8 +64,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kpow
-  annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: path-prefix@kubernatescrd
+  #annotations:
+  #  traefik.ingress.kubernetes.io/router.middlewares: path-prefix@kubernatescrd
 spec:
   rules:
   - http:
