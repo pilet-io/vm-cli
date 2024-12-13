@@ -69,9 +69,7 @@ spec:
   entryPoints:
   - web
   routes:
-  - match: PathPrefix(\`/kpow\`)
-    middlewares:
-    - name: kpow-prefix
+  - match: PathPrefix(\`/\`)
     kind: Rule
     services:
     - name: kpow
