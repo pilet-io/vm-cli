@@ -58,24 +58,22 @@ metadata:
 spec:
   stripPrefix:
     prefixes:
-      - "/kpow"
+    - "/kpow"
     forceSlash: false
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
 metadata:
-  name: kpow
-  annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: kpow-prefix@kubernatescrd
+  name: kpow-route
+
 spec:
-  rules:
-  - http:
-      paths:
-      - path: "/kpow"
-        pathType: Prefix
-        backend:
-          service:
-            name: kpow
-            port:
-              number: 3000
+  entryPoints:
+  - web
+
+  routes:
+  - match: PathPrefix(`/kpow`)
+    kind: Rule
+    services:
+    - name: kpow
+      port: 3000
 EOF
