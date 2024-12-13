@@ -67,9 +67,9 @@ metadata:
   name: kpow-route
 spec:
   entryPoints:
-  - web
+  - http
   routes:
-  - match: PathPrefix('/kpow')
+  - match: PathPrefix(``/kpow``)
     kind: Rule
     services:
     - name: kpow
