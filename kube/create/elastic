@@ -30,4 +30,17 @@ spec:
   count: 1
   elasticsearchRef:
     name: quickstart
+---
+kind: IngressRoute
+metadata:
+  name: elastic-route
+spec:
+  entryPoints:
+  - web
+  routes:
+  - match: PathPrefix(\`/\`)
+    kind: Rule
+    services:
+    - name: quickstart-kb-http
+      port: 5601
 EOF
