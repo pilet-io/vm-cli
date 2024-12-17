@@ -1,0 +1,54 @@
+#!/bin/bash
+
+#> [ns]=otel [key]=030f250aea0ff3dba75e8ba404d5ad47FFFFNRAL
+
+kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
+helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+helm repo update
+
+cat <<EOF > /tmp/values.yml
+mode: deployment
+
+presets:
+  logsCollection:
+    enabled: true
+
+  kubernetesAttributes:
+    enabled: false
+
+  kubeletMetrics:
+    enabled: true
+
+config:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+        http:
+
+  processors:
+    batch:
+
+  exporters:
+    otlphttp:
+      endpoint: https://otlp.nr-data.net
+      headers:
+        api-key: $KEY
+
+  service:
+   pipelines:
+     traces:
+       receivers: [otlp]
+       processors: [batch]
+       exporters: [otlphttp]
+     metrics:
+       receivers: [otlp]
+       processors: [batch]
+       exporters: [otlphttp]
+     logs:
+       receivers: [otlp]
+       processors: [batch]
+       exporters: [otlphttp]
+EOF
+
+helm install confluent-collector open-telemetry/opentelemetry-collector --namespace $NS --create-namespace --values /tmp/values.yml
