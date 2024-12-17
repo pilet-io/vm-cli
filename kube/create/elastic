@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#> [ns]=elastic
+
+kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
+kubectl create -n $NS -f https://download.elastic.co/downloads/eck/2.15.0/crds.yaml
+kubectl apply -n $NS -f https://download.elastic.co/downloads/eck/2.15.0/operator.yaml
+
+
+cat <<EOF | kubectl apply -n $NS -f -
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: quickstart
+spec:
+  version: 8.17.0
+  nodeSets:
+  - name: default
+    count: 1
+    config:
+      node.store.allow_mmap: false
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: quickstart
+spec:
+  version: 8.17.0
+  count: 1
+  elasticsearchRef:
+    name: quickstart
+EOF
