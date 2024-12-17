@@ -21,9 +21,6 @@ presets:
   hostMetrics:
     enabled: true
 
-  clusterMetrics:
-    enabled: true
-
   kubeletMetrics:
     enabled: true
 
