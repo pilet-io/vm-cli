@@ -8,6 +8,8 @@ helm repo update
 
 cat <<EOF > /tmp/values.yml
 mode: deployment
+image:
+  repository: "otel/opentelemetry-collector-contrib"
 
 presets:
   logsCollection:
