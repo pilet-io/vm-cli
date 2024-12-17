@@ -31,16 +31,21 @@ spec:
   elasticsearchRef:
     name: quickstart
 ---
-kind: IngressRoute
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: elastic-route
+  name: elastic-http
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
-  entryPoints:
-  - web
-  routes:
-  - match: PathPrefix(\`/\`)
-    kind: Rule
-    services:
-    - name: quickstart-kb-http
-      port: 5601
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: quickstart-kb-http
+                port:
+                  number: 5601
 EOF
