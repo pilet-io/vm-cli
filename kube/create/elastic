@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#> [ns]=elastic
+#> [ns]=elastic-system
 
 kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
 kubectl create -n $NS -f https://download.elastic.co/downloads/eck/2.15.0/crds.yaml
