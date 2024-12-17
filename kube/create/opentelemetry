@@ -26,7 +26,9 @@ config:
     otlp:
       protocols:
         grpc:
+          endpoint: 0.0.0.0:4317
         http:
+          endpoint: 0.0.0.0:4318
 
   processors:
     batch:
@@ -53,4 +55,4 @@ config:
        exporters: [otlphttp]
 EOF
 
-helm install confluent-collector open-telemetry/opentelemetry-collector --namespace $NS --create-namespace --values /tmp/values.yml
+helm install otel open-telemetry/opentelemetry-collector --namespace $NS --values /tmp/values.yml
