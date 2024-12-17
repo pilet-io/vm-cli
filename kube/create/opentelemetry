@@ -7,7 +7,7 @@ helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm
 helm repo update
 
 cat <<EOF > /tmp/values.yml
-mode: deployment
+mode: daemonset
 image:
   repository: "otel/opentelemetry-collector-contrib"
 
@@ -16,6 +16,12 @@ presets:
     enabled: true
 
   kubernetesAttributes:
+    enabled: false
+
+  hostMetrics:
+    enabled: true
+
+  clusterMetrics:
     enabled: true
 
   kubeletMetrics:
