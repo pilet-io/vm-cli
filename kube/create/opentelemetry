@@ -16,7 +16,7 @@ presets:
     enabled: true
 
   kubernetesAttributes:
-    enabled: false
+    enabled: true
 
   kubeletMetrics:
     enabled: true
