@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#> [ns]=otel
+
+kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
+helm repo add splunk-otel-collector-chart https://signalfx.github.io/splunk-otel-collector-chart
+helm repo update
+
+helm install splunk-otel-collector -n $NS --set="splunkObservability.accessToken=XAHH0bKYL1LyJujyGF8kmQ,clusterName=pas-vm,splunkObservability.realm=us1,gateway.enabled=false,environment=pas-vm" splunk-otel-collector-chart/splunk-otel-collector
