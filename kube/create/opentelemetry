@@ -15,15 +15,8 @@ service:
   enabled: true
 
 presets:
-  logsCollection:
-    enabled: true
-
-  kubernetesAttributes:
-    enabled: false
-
   hostMetrics:
     enabled: true
-
   kubeletMetrics:
     enabled: true
 
@@ -42,25 +35,20 @@ config:
       timeout: 10s
 
   exporters:
-    otlphttp:
-      endpoint: https://otlp.nr-data.net
-      headers:
-        api-key: $KEY
+    signalfx:
+      access_token: XAHH0bKYL1LyJujyGF8kmQ
+      realm: us1
 
   service:
    pipelines:
      traces:
        receivers: [otlp]
        processors: [batch]
-       exporters: [otlphttp]
+       exporters: [signalfx]
      metrics:
        receivers: [otlp]
        processors: [batch]
-       exporters: [otlphttp]
-     logs:
-       receivers: [otlp]
-       processors: [batch]
-       exporters: [otlphttp]
+       exporters: [signalfx]
 EOF
 
 helm install otel open-telemetry/opentelemetry-collector --namespace $NS --values /tmp/values.yml
