@@ -2,16 +2,26 @@
 
 #> [ns]=postgres [disk]=100
 
-helm repo add bitnami https://charts.bitnami.com/bitnami
-#helm repo update
-
-cat <<EOF > /tmp/values.yaml
-global:
-  postgresql:
-    auth:
-      postgresPassword: par0l2010
-persistence:
-  size: ${DISK}Gi
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: $NS
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: postgresql
+  namespace: kube-system
+spec:
+  repo: https://charts.bitnami.com/bitnami
+  chart: postgresql
+  targetNamespace: $NS
+  valuesContent: |-
+    global:
+      postgresql:
+        auth:
+          postgresPassword: par0l2010
+    persistence:
+      size: ${DISK}Gi
 EOF
-
-helm upgrade --install pg --namespace $NS --create-namespace --values /tmp/values.yaml bitnami/postgresql
