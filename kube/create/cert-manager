@@ -18,5 +18,6 @@ spec:
   chart: cert-manager
   targetNamespace: $NS
   valuesContent: |-
-    crds.enabled: true
+    crds:
+      enabled: true
 EOF
