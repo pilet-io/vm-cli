@@ -15,8 +15,8 @@ metadata:
   namespace: $NS
 spec:
   repo: https://charts.jetstack.io
-  chart: jetstack/cert-manager
+  chart: cert-manager
   targetNamespace: $NS
   valuesContent: |-
-    installCRDs: true
+    crds.enabled: true
 EOF
