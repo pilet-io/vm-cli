@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#> [ns]=cert-manager
+
+cat <<EOF
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: $NS
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: cert-manager
+  namespace: $NS
+spec:
+  repo: https://charts.jetstack.io
+  chart: jetstack/cert-manager
+  targetNamespace: $NS
+  valuesContent: |-
+    installCRDs: true
+EOF
