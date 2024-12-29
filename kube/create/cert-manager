@@ -50,26 +50,4 @@ spec:
           apiKeySecretRef:
             name: cloudflare-api-key-secret
             key: api-key
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: redirect-https
-spec:
-  redirectScheme:
-    scheme: https
-    permanent: true
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: domain
-spec:
-  secretName: tls-domain
-  dnsNames:
-  - ${DNS}
-  issuerRef:
-    name: acme
-    kind: ClusterIssuer
-    group: cert-manager.io
 EOF
