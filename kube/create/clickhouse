@@ -1,0 +1,161 @@
+#!/bin/bash
+
+#> [ns]=clickhouse
+
+cat << EOF
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: clickhouse
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 6Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard-rwo
+  hostPath:
+    path: /mnt/clickhouse
+  persistentVolumeReclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: clickhouse
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 64Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clickhouse-cm
+data:
+  storage.xml: |
+    <clickhouse>
+        <listen_host>0.0.0.0</listen_host>
+        <path>/data/clickhouse/</path>
+        <user_directories>
+            <local_directory>
+                <path>/data/</path>
+            </local_directory>
+        </user_directories>
+        <prometheus>
+            <endpoint>/metrics</endpoint>
+            <port>9363</port>
+            <metrics>true</metrics>
+            <events>true</events>
+            <asynchronous_metrics>true</asynchronous_metrics>
+        </prometheus>
+    </clickhouse>
+  access_management.xml: |
+    <clickhouse>
+      <users>
+        <default>
+          <access_management>1</access_management>
+          <named_collection_control>1</named_collection_control>
+          <show_named_collections>1</show_named_collections>
+          <show_named_collections_secrets>1</show_named_collections_secrets>
+          <double_sha1_passwords>1</double_sha1_passwords>
+        </default>
+      </users>
+    </clickhouse>
+  users.xml: |
+    <?xml version="1.0"?>
+    <clickhouse>
+        <profiles>
+            <default><max_memory_usage>your_choice</max_memory_usage>
+                <load_balancing>random</load_balancing>
+            </default>
+            <readonly>
+                <readonly>1</readonly>
+            </readonly>
+        </profiles>
+        <users>
+          <default>
+                <password_double_sha1_hex>your_password_hex</password_double_sha1_hex><networks>
+                    <ip>::/0</ip>
+                </networks>
+                <profile>default</profile>
+                <quota>default</quota>
+            </default>
+        </users><quotas>
+            <default>
+                <interval>
+                    <duration>3600</duration>
+                    <queries>0</queries>
+                    <errors>0</errors>
+                    <result_rows>0</result_rows>
+                    <read_rows>0</read_rows>
+                    <execution_time>0</execution_time>
+                </interval>
+            </default>
+        </quotas>
+    </clickhouse>
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: clickhouse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clickhouse
+  template:
+    metadata:
+      labels:
+        app: clickhouse
+    spec:
+      volumes:
+        - name: clickhouse-cm
+          configMap:
+            name: clickhouse-cm
+        - name: clickhouse-storage
+          persistentVolumeClaim:
+            claimName: clickhouse
+      containers:
+      - name: clickhouse
+        image: clickhouse/clickhouse-server:25.1
+        ports:
+        - containerPort: 8123
+        - containerPort: 9000
+        resources:
+          limits:
+            cpu: 600m
+            memory: 4Gi
+          requests:
+            cpu: 300m
+            memory: 2Gi
+        volumeMounts:
+            - name: clickhouse-cm
+              mountPath: /etc/clickhouse-server/users.xml
+              subPath: users.xml
+            - name: clickhouse-cm
+              mountPath: /etc/clickhouse-server/users.d/default.xml
+              subPath: access_management.xml
+            - name: clickhouse-cm
+              mountPath: /etc/clickhouse-server/config.d/default_config.xml
+              subPath: storage.xml
+            - name: clickhouse-storage
+              mountPath: /data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse
+spec:
+  selector:
+    app: clickhouse
+  type:
+  ports:
+  - port: 80
+    targetPort: 9000
+    protocol: TCP
+    name: http
+EOF
