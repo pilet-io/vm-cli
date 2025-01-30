@@ -9,11 +9,10 @@ cat <<EOF | kubectl apply -f -
 apiVersion: helm.cattle.io/v1
 kind: HelmChart
 metadata:
-  name: clickhouse
-  namespace: kube-system
+  name: otel
 spec:
   repo:  https://open-telemetry.github.io/opentelemetry-helm-charts
-  chart: open-telemetry/opentelemetry-collector
+  chart: opentelemetry-collector
   targetNamespace: $NS
   valuesContent: |-
     mode: daemonset
