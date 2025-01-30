@@ -1,0 +1,73 @@
+#!/bin/bash
+
+#> [ns]=otel [key]=030f250aea0ff3dba75e8ba404d5ad47FFFFNRAL
+
+kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
+helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+helm repo update
+
+cat <<EOF > /tmp/values.yml
+mode: daemonset
+image:
+  repository: "otel/opentelemetry-collector-contrib"
+
+service:
+  enabled: true
+
+presets:
+  hostMetrics:
+    enabled: true
+  kubeletMetrics:
+    enabled: true
+
+config:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+  processors:
+    batch:
+      send_batch_size: 100000
+      timeout: 5s
+    memory_limiter:
+      check_interval: 2s
+      limit_mib: 1800
+      spike_limit_mib: 500
+    resourcedetection/system:
+      detectors: [ "system" ]
+      system:
+        hostname_sources: [ "os" ]
+    resource:
+      attributes:
+        - key: service.name
+          value: "serviceName"
+          action: upsert
+
+  exporters:
+    clickhouse:
+      endpoint: tcp://chi-simple-01-simple-0-0.clickhouse:9000
+      database: otel
+      traces_table_name: otel_traces
+      ttl: 12h
+      timeout: 10s
+      sending_queue:
+        queue_size: 100
+      retry_on_failure:
+        enabled: true
+        initial_interval: 5s
+        max_interval: 30s
+        max_elapsed_time: 300s
+
+  service:
+   pipelines:
+     traces:
+       receivers: [ otlp ]
+       processors: [ memory_limiter, resourcedetection/system, resource, batch ]
+       exporters: [ clickhouse ]
+EOF
+
+helm install otel open-telemetry/opentelemetry-collector --namespace $NS --values /tmp/values.yml
