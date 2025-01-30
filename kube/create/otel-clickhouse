@@ -57,6 +57,8 @@ spec:
 
       exporters:
         clickhouse:
+          username: test_user
+          password: test_password
           endpoint: tcp://chi-simple-01-simple-0-0.clickhouse:9000
           database: otel
           traces_table_name: otel_traces
