@@ -45,15 +45,7 @@ spec:
           check_interval: 2s
           limit_mib: 1800
           spike_limit_mib: 500
-        resourcedetection/system:
-          detectors: [ "system" ]
-          system:
-            hostname_sources: [ "os" ]
-        resource:
-          attributes:
-            - key: service.name
-              value: "serviceName"
-              action: upsert
+
 
       exporters:
         clickhouse:
@@ -76,6 +68,6 @@ spec:
        pipelines:
          traces:
            receivers: [ otlp ]
-           processors: [ memory_limiter, resourcedetection/system, resource, batch ]
+           processors: [ memory_limiter, batch ]
            exporters: [ clickhouse ]
 EOF
