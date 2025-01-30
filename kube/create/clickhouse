@@ -2,6 +2,8 @@
 
 #> [ns]=clickhouse
 
+kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
+
 cat << EOF | kubectl apply -n $NS -f -
 ---
 apiVersion: v1
