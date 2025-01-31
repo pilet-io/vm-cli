@@ -80,7 +80,7 @@ click -d otel --query "CREATE TABLE IF NOT EXISTS otel_metrics_gauge
                  TTL toDateTime(TimeUnix) + toIntervalDay(180)
                  SETTINGS index_granularity = 8192, ttl_only_drop_parts = 1"
 
-  click --query "CREATE TABLE IF NOT EXISTS otel_metrics_sum (
+  click -d otel --query "CREATE TABLE IF NOT EXISTS otel_metrics_sum (
           ResourceAttributes Map(LowCardinality(String), String) CODEC(ZSTD(1)),
           ResourceSchemaUrl String CODEC(ZSTD(1)),
           ScopeName String CODEC(ZSTD(1)),
