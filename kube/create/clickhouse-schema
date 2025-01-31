@@ -1,7 +1,6 @@
 #!/bin/bash
 
 #>
+alias ch='kubectl exec -ti -n clickhouse chi-click-main-0-0-0 -- clickhouse-client'
 
-cat <<EOF | kubectl exec -ti -n clickhouse chi-click-main-0-0-0 -- clickhouse-client
-CREATE DATABASE IF NOT EXISTS otel;
-EOF
+ch --query "CREATE DATABASE IF NOT EXISTS otel"
