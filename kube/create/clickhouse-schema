@@ -5,7 +5,7 @@ function click() {
   kubectl exec -ti -n clickhouse --container clickhouse chi-click-main-0-0-0 -- clickhouse-client "$@"
 }
 
-click --query "CREATE DATABASE otel;"
+click --query "CREATE DATABASE IF NOT EXISTS otel;"
 click -d otel --query "CREATE TABLE IF NOT EXISTS otel_traces (
                    Timestamp DateTime64(9) CODEC(Delta, ZSTD(1)),
                    TraceId String CODEC(ZSTD(1)),
