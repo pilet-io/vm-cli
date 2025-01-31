@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#> [ns]=otel
+#> [ns]=clickhouse
 
 kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
 
@@ -25,8 +25,6 @@ spec:
     presets:
       hostMetrics:
         enabled: true
-      kubeletMetrics:
-        enabled: true
 
     config:
       receivers:
@@ -49,13 +47,22 @@ spec:
 
       exporters:
         clickhouse:
-          username: test_user
-          password: test_password
-          endpoint: tcp://chi-simple-01-simple-0-0.clickhouse:9000
+          endpoint: tcp://chi-click-main-0-0.clickhouse:9000
           database: otel
           traces_table_name: otel_traces
-          ttl: 12h
+          ttl: 72h
           timeout: 10s
+          metrics_tables:
+            gauge:
+              name: "otel_metrics_gauge"
+            sum:
+              name: "otel_metrics_sum"
+            summary:
+              name: "otel_metrics_summary"
+            histogram:
+              name: "otel_metrics_histogram"
+            exponential_histogram:
+              name: "otel_metrics_exponential_histogram"
           sending_queue:
             queue_size: 100
           retry_on_failure:
@@ -65,9 +72,13 @@ spec:
             max_elapsed_time: 300s
 
       service:
-       pipelines:
-         traces:
-           receivers: [ otlp ]
-           processors: [ memory_limiter, batch ]
-           exporters: [ clickhouse ]
+        pipelines:
+          metrics:
+            receivers: [ otlp ]
+            processors: [ memory_limiter, batch ]
+            exporters: [ clickhouse ]
+          traces:
+            receivers: [ otlp ]
+            processors: [ memory_limiter, batch ]
+            exporters: [ clickhouse ]
 EOF
