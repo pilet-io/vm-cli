@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#>
+
+cat <<EOF | kubectl exec -ti -n clickhouse chi-click-main-0-0-0 -- clickhouse-client
+CREATE DATABASE IF NOT EXISTS otel;
+EOF
