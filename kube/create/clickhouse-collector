@@ -4,8 +4,7 @@
 
 kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
 
-
-cat <<EOF | kubectl apply -f -
+cat <<EOF | kubectl apply -n $NS -f -
 apiVersion: helm.cattle.io/v1
 kind: HelmChart
 metadata:
