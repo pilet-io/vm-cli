@@ -6,7 +6,7 @@ function click() {
 }
 
 click --query "CREATE DATABASE otel;"
-click --query "CREATE TABLE IF NOT EXISTS otel_traces (
+click -d otel --query "CREATE TABLE IF NOT EXISTS otel_traces (
                    Timestamp DateTime64(9) CODEC(Delta, ZSTD(1)),
                    TraceId String CODEC(ZSTD(1)),
                    SpanId String CODEC(ZSTD(1)),
