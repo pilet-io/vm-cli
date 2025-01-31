@@ -5,4 +5,4 @@ function click() {
   kubectl exec -ti -n clickhouse chi-click-main-0-0-0 -- clickhouse-client $@
 }
 
-click --query "CREATE DATABASE IF NOT EXISTS otel"
+click --query "CREATE DATABASE IF NOT EXISTS otel;"
