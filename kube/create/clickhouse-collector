@@ -26,10 +26,15 @@ spec:
 
     presets:
       hostMetrics:
-        enabled: true
+        enabled: false
 
     config:
       receivers:
+        hostmetrics:
+          collection_interval: 30s
+          scrapers:
+            cpu:
+            memory:
         otlp:
           protocols:
             grpc:
@@ -88,7 +93,7 @@ spec:
             processors: [ memory_limiter, resource, batch ]
             exporters: [ clickhouse ]
           metrics:
-            receivers: [ otlp ]
+            receivers: [ otlp, hostmetrics ]
             processors: [ memory_limiter, resource, batch ]
             exporters: [ clickhouse ]
           traces:
