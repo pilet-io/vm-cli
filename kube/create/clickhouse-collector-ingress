@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#> [ns]=clickhouse
+
+cat <<EOF | kubectl apply -n $NS -f -
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-http
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /v1/metrics
+            pathType: Prefix
+            backend:
+              service:
+                name: otel-opentelemetry-collector
+                port:
+                  number: 4318
+EOF

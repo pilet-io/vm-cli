@@ -20,20 +20,3 @@ spec:
     targetPort: 8123
     nodePort: 30812
 EOF
-
-cat << EOF | kubectl apply -n $NS -f -
-kind: Service
-apiVersion: v1
-metadata:
-  name: clickhouse-collector-nodeport
-spec:
-  type: NodePort
-  selector:
-    service: otel-opentelemetry-collector
-  ports:
-  - protocol: TCP
-    name: otel
-    port: 4318
-    targetPort: 4318
-    nodePort: 30431
-EOF
