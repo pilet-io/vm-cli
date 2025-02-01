@@ -16,8 +16,10 @@ spec:
   ports:
   - protocol: TCP
     port: 9000
+    targetPort: 9000
     nodePort: 30900
   - protocol: TCP
     port: 8123
+    targetPort: 8123
     nodePort: 30812
 EOF
