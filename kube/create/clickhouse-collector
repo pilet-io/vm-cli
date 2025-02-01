@@ -2,6 +2,9 @@
 
 #> [ns]=clickhouse
 
+HOSTNAME=$(hostnamectl hostname)
+echo "Hostname: $HOSTNAME"
+
 kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
 
 cat <<EOF | kubectl apply -n kube-system -f -
@@ -35,10 +38,11 @@ spec:
               endpoint: 0.0.0.0:4318
 
       processors:
-        resourcedetection/system:
-          detectors: ["system"]
-          system:
-            hostname_sources: ["os"]
+        resource:
+          attributes:
+          - key: "host.name"
+            value: "$HOSTNAME"
+            action: upsert
         batch:
           send_batch_size: 50000
           timeout: 30s
@@ -81,14 +85,14 @@ spec:
         pipelines:
           logs:
             receivers: [ otlp ]
-            processors: [ memory_limiter, resourcedetection/system, batch ]
+            processors: [ memory_limiter, resource, batch ]
             exporters: [ clickhouse ]
           metrics:
             receivers: [ otlp ]
-            processors: [ memory_limiter, resourcedetection/system, batch ]
+            processors: [ memory_limiter, resource, batch ]
             exporters: [ clickhouse ]
           traces:
             receivers: [ otlp ]
-            processors: [ memory_limiter, resourcedetection/system, batch ]
+            processors: [ memory_limiter, resource, batch ]
             exporters: [ clickhouse ]
 EOF
