@@ -90,14 +90,14 @@ spec:
         pipelines:
           logs:
             receivers: [ otlp ]
-            processors: [ memory_limiter, resource, batch ]
+            processors: [ memory_limiter, batch ]
             exporters: [ clickhouse ]
           metrics:
-            receivers: [ otlp, hostmetrics ]
-            processors: [ memory_limiter, resource, batch ]
+            receivers: [ otlp ]
+            processors: [ memory_limiter, batch ]
             exporters: [ clickhouse ]
           traces:
             receivers: [ otlp ]
-            processors: [ memory_limiter, resource, batch ]
+            processors: [ memory_limiter, batch ]
             exporters: [ clickhouse ]
 EOF
