@@ -12,7 +12,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    service: clickhouse-click
+    clickhouse.altinity.com/chi: click
   ports:
   - protocol: TCP
     port: 9000
