@@ -29,7 +29,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app.kubernetes.io/instance: otel
+    service: otel-opentelemetry-collector
   ports:
   - protocol: TCP
     name: otel
