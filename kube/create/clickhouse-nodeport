@@ -33,7 +33,7 @@ spec:
   ports:
   - protocol: TCP
     name: otel
-    port: 4317
-    targetPort: 4317
+    port: 4318
+    targetPort: 4318
     nodePort: 30431
 EOF
