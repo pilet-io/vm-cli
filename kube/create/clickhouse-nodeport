@@ -15,10 +15,12 @@ spec:
     clickhouse.altinity.com/chi: click
   ports:
   - protocol: TCP
+    name: click
     port: 9000
     targetPort: 9000
     nodePort: 30900
   - protocol: TCP
+    name: jdbc
     port: 8123
     targetPort: 8123
     nodePort: 30812
