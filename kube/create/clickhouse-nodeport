@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#> [ns]=clickhouse
+
+kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
+
+cat << EOF | kubectl apply -n $NS -f -
+kind: Service
+apiVersion: v1
+metadata:
+  name: clickhouse-nodeport
+spec:
+  type: NodePort
+  selector:
+    service: clickhouse-click
+  ports:
+  - protocol: TCP
+    port: 9000
+    nodePort: 30900
+EOF
