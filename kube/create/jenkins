@@ -163,17 +163,20 @@ spec:
   - name: agent-0
     image: ubuntu:24.04
     command: ["/bin/bash", "-c"]
-    args: ["/bin/setup.sh"]
-    volumeMounts:
-    - name: setup-volume
-      mountPath: /bin/
-      readOnly: true
-      subPath: setup.sh
-  volumes:
-  - name: setup-volume
-    configMap:
-      defaultMode: 0700
-      name: setup-configmap
+    args: |
+    - echo "Hello" > /root/.init
+    - sleep infinity
+
+#    volumeMounts:
+#    - name: setup-volume
+#      mountPath: /bin/
+#      readOnly: true
+#      subPath: setup.sh
+#  volumes:
+#  - name: setup-volume
+#    configMap:
+#      defaultMode: 0700
+#      name: setup-configmap
 ---
 apiVersion: v1
 kind: ConfigMap
