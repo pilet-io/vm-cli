@@ -163,12 +163,12 @@ spec:
   - name: agent-0
     image: ubuntu:24.04
     command: ["/bin/bash", "-c"]
-    args: ["/bin/setup.sh"]
+    args: ["/bin/setup-script.sh"]
     volumeMounts:
     - name: setup-volume
-      mountPath: /bin/setup.sh
+      mountPath: /bin/setup-script.sh
       readOnly: true
-      subPath: setup.sh
+      subPath: setup-script.sh
   volumes:
   - name: setup-volume
     configMap:
@@ -180,10 +180,6 @@ kind: ConfigMap
 metadata:
   name: setup-configmap
 data:
-  setup.sh: |-
-    #!/bin/bash
-    apt update
-    sleep infinity
   setup-script.sh: |-
     #!/bin/bash
     apt update
