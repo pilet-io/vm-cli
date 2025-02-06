@@ -45,7 +45,7 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: local-storage
+  storageClassName: local-path
   claimRef:
     name: jenkins-pv-claim
   capacity:
@@ -68,7 +68,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: jenkins-pv-claim
 spec:
-  storageClassName: local-storage
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
