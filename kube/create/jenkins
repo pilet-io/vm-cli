@@ -194,6 +194,7 @@ data:
     usermod -aG docker $USER
     usermod -aG docker jenkins
     usermod -aG sudo jenkins
+    echo "done" > /root/.done
 
     sleep infinity
 EOF
