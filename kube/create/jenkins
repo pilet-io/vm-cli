@@ -187,7 +187,7 @@ data:
     apt update
     apt install -y --no-install-recommends openjdk-17-jdk-headless
     adduser --group --home /home/jenkins --shell /bin/bash jenkins
-    apt install docker.io -y
+    apt install docker.io maven -y
     systemctl enable docker --now
     usermod -aG docker $USER
     usermod -aG docker jenkins
