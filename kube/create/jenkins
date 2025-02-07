@@ -138,15 +138,10 @@ data:
     #!/bin/bash
     apt update
     apt install -y --no-install-recommends openjdk-17-jdk-headless
-    useradd -m -d /var/jenkins jenkins
-    mkdir -p /var/jenkins/.ssh
-    ssh-keyscan -t ed25519 github.com >> /var/jenkins/.ssh/known_hosts
-    chown -R jenkins:jenkins /var/jenkins/.ssh
+    mkdir -p /root/.ssh
+    ssh-keyscan -t ed25519 github.com >> /root/.ssh/known_hosts
     apt install docker.io maven -y
     systemctl enable docker --now
-    usermod -aG docker $USER
-    usermod -aG docker jenkins
-    usermod -aG sudo jenkins
     echo "done" > /root/.done
 
     sleep infinity
