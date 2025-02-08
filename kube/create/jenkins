@@ -141,6 +141,9 @@ data:
     mkdir -p /root/.ssh
     ssh-keyscan -t ed25519 github.com >> /root/.ssh/known_hosts
     apt install docker.io maven -y
+    curl -LO https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl
+    chmod +x kubectl
+    mv kubectl /usr/local/bin
     systemctl enable docker --now
     echo "done" > /root/.done
 
