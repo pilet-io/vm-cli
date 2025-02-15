@@ -4,57 +4,85 @@
 
 kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
 
-cat<<EOF | kubectl apply -n $NS -f -
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: jenkins-admin
-rules:
-  - apiGroups: [""]
-    resources: ["*"]
-    verbs: ["*"]
----
+cat << EOF | kubectl apply -n $NS -f -
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: jenkins-admin
-  namespace: $NS
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: Role
 metadata:
-  name: jenkins-admin
+  name: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["create","delete","get","list","patch","update","watch"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create","delete","get","list","patch","update","watch"]
+- apiGroups: [""]
+  resources: ["pods/log"]
+  verbs: ["get","list","watch"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jenkins-role-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: jenkins-admin
+  kind: Role
+  name: jenkins
 subjects:
 - kind: ServiceAccount
   name: jenkins-admin
-  namespace: $NS
+EOF
+
+cat << EOF | kubectl apply -n $NS -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sa-token-secret
+  annotations:
+    kubernetes.io/service-account.name: jenkins-admin
+type: kubernetes.io/service-account-token
 EOF
 
 cat<<EOF | kubectl apply -n $NS -f -
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jenkins
+  name: jenkins-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jenkins-server
+      app: jenkins
   template:
     metadata:
       labels:
-        app: jenkins-server
+        app: jenkins
     spec:
-      securityContext:
-        fsGroup: 1000
-        runAsUser: 1000
       serviceAccountName: jenkins-admin
+      securityContext:
+            fsGroup: 1000
+            runAsUser: 1000
       containers:
         - name: jenkins
           image: jenkins/jenkins:lts
@@ -86,6 +114,13 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
+          volumeMounts:
+            - name: jenkins-data
+              mountPath: /var/jenkins_home
+      volumes:
+        - name: jenkins-data
+          persistentVolumeClaim:
+              claimName: jenkins-pv-claim
 ---
 apiVersion: v1
 kind: Service
@@ -97,12 +132,16 @@ metadata:
       prometheus.io/port:   '8080'
 spec:
   selector:
-    app: jenkins-server
+    app: jenkins
   type: NodePort
   ports:
-    - port: 8080
+    - name: httpport
+      port: 8080
       targetPort: 8080
       nodePort: 32000
+    - name: jnlpport
+      port: 50000
+      targetPort: 50000
 EOF
 
 cat<<EOF | kubectl apply -n $NS -f -
