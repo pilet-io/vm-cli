@@ -2,17 +2,9 @@
 
 #> [ns]=tools
 
-kubectl create ns $NS
+kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
 
 cat<<EOF | kubectl apply -n $NS -f -
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: dockersec
-type: kubernetes.io/dockerconfigjson
-data:
-  .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOnsidXNlcm5hbWUiOiJwaWxldCIsInBhc3N3b3JkIjoiZGNrcl9wYXRfQW1mMW0ySTd0N0c1QlJrdUI2UTFNZDBoQ0RRIiwiZW1haWwiOiJwb3RhcG92QHlhaG9vLmNvbSIsImF1dGgiOiJjR2xzWlhRNlpHTnJjbDl3WVhSZlFXMW1NVzB5U1RkME4wYzFRbEpyZFVJMlVURk5aREJvUTBSUiJ9fX0=
 ---
 apiVersion: v1
 kind: Pod
@@ -21,8 +13,6 @@ metadata:
   labels:
     app: console
 spec:
-  imagePullSecrets:
-  - name: dockersec
   containers:
   - name: console
     image: pilet/kube-console:1.0
