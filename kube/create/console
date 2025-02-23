@@ -5,6 +5,7 @@
 kubectl create ns $NS
 
 cat<<EOF | kubectl apply -n $NS -f -
+---
 apiVersion: v1
 kind: Pod
 metadata:
@@ -14,11 +15,25 @@ metadata:
 spec:
   containers:
   - name: console
-    image: ubuntu:24.04
+    image: pilet/kube-console:1.0
     args:
       - /bin/sh
       - -c
-      - while :; do sleep 2073600; done
+      - while :; do sleep infinity; done
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: console-service
+spec:
+  selector:
+    app: console
+  type: NodePort
+  ports:
+    - name: ssh
+      port: 22
+      targetPort: 22
+      nodePort: 32022
 EOF
 
 
