@@ -17,21 +17,21 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: otel-opentelemetry-collector
+                name: collector-opentelemetry-collector
                 port:
                   number: 4318
           - path: /v1/logs
             pathType: Prefix
             backend:
               service:
-                name: otel-opentelemetry-collector
+                name: collector-opentelemetry-collector
                 port:
                   number: 4318
           - path: /v1/metrics
             pathType: Prefix
             backend:
               service:
-                name: otel-opentelemetry-collector
+                name: collector-opentelemetry-collector
                 port:
                   number: 4318
 EOF
