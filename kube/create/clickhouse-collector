@@ -87,4 +87,4 @@ config:
         exporters: [ clickhouse ]
 EOF
 
-helm install collector --namespace $NS --values.yaml /tmp/collector.yaml open-telemetry/opentelemetry-collector
+helm install collector --namespace $NS --values /tmp/collector.yaml open-telemetry/opentelemetry-collector
