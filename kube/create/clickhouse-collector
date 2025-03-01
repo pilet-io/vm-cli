@@ -2,8 +2,6 @@
 
 #> [ns]=clickhouse
 
-HOSTNAME=$(hostnamectl hostname)
-echo "Hostname: $HOSTNAME"
 
 kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
 
@@ -43,11 +41,6 @@ spec:
               endpoint: 0.0.0.0:4318
 
       processors:
-        resource:
-          attributes:
-          - key: "host.name"
-            value: "$HOSTNAME"
-            action: upsert
         batch:
           send_batch_size: 50000
           timeout: 30s
