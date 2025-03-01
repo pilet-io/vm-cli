@@ -42,7 +42,7 @@ processors:
 
 exporters:
   otlphttp:
-    endpoint: https://system.kueb.io:4318
+    endpoint: http://system.kueb.io:4318
 
 service:
 
