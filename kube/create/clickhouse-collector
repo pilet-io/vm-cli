@@ -78,7 +78,7 @@ config:
         processors: [ memory_limiter, batch ]
         exporters: [ clickhouse ]
       metrics:
-        receivers: [ otlp ]
+        receivers: [ hostmetrics, otlp ]
         processors: [ memory_limiter, batch ]
         exporters: [ clickhouse ]
       traces:
