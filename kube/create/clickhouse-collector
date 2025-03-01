@@ -4,93 +4,87 @@
 
 
 kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
+helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 
-cat <<EOF | kubectl apply -n kube-system -f -
-apiVersion: helm.cattle.io/v1
-kind: HelmChart
-metadata:
-  name: otel
-spec:
-  repo:  https://open-telemetry.github.io/opentelemetry-helm-charts
-  chart: opentelemetry-collector
-  targetNamespace: $NS
-  valuesContent: |-
-    mode: daemonset
-    image:
-      repository: "otel/opentelemetry-collector-contrib"
+cat <<EOF | tee /tmp/collector.yaml
+mode: daemonset
+image:
+  repository: "otel/opentelemetry-collector-contrib"
 
-    service:
-      enabled: true
+service:
+  enabled: true
 
-    presets:
-      hostMetrics:
-        enabled: false
+presets:
+  hostMetrics:
+    enabled: false
 
-    config:
-      receivers:
-        hostmetrics:
-          collection_interval: 30s
-          scrapers:
-            cpu:
-            memory:
-        otlp:
-          protocols:
-            grpc:
-              endpoint: 0.0.0.0:4317
-            http:
-              endpoint: 0.0.0.0:4318
+config:
+  receivers:
+    hostmetrics:
+      collection_interval: 30s
+      scrapers:
+        cpu:
+        memory:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
 
-      processors:
-        batch:
-          send_batch_size: 50000
-          timeout: 30s
-        memory_limiter:
-          check_interval: 2s
-          limit_mib: 1800
-          spike_limit_mib: 500
+  processors:
+    batch:
+      send_batch_size: 50000
+      timeout: 30s
+    memory_limiter:
+      check_interval: 2s
+      limit_mib: 1800
+      spike_limit_mib: 500
 
 
-      exporters:
-        clickhouse:
-          username: test_user
-          password: test_password
-          endpoint: tcp://chi-click-main-0-0.clickhouse:9000
-          database: otel
-          logs_table_name: otel_logs
-          traces_table_name: otel_traces
-          ttl: 72h
-          timeout: 10s
-          metrics_tables:
-            gauge:
-              name: "otel_metrics_gauge"
-            sum:
-              name: "otel_metrics_sum"
-            summary:
-              name: "otel_metrics_summary"
-            histogram:
-              name: "otel_metrics_histogram"
-            exponential_histogram:
-              name: "otel_metrics_exponential_histogram"
-          sending_queue:
-            queue_size: 100
-          retry_on_failure:
-            enabled: true
-            initial_interval: 5s
-            max_interval: 30s
-            max_elapsed_time: 300s
+  exporters:
+    clickhouse:
+      username: test_user
+      password: test_password
+      endpoint: tcp://chi-click-main-0-0.clickhouse:9000
+      database: otel
+      logs_table_name: otel_logs
+      traces_table_name: otel_traces
+      ttl: 72h
+      timeout: 10s
+      metrics_tables:
+        gauge:
+          name: "otel_metrics_gauge"
+        sum:
+          name: "otel_metrics_sum"
+        summary:
+          name: "otel_metrics_summary"
+        histogram:
+          name: "otel_metrics_histogram"
+        exponential_histogram:
+          name: "otel_metrics_exponential_histogram"
+      sending_queue:
+        queue_size: 100
+      retry_on_failure:
+        enabled: true
+        initial_interval: 5s
+        max_interval: 30s
+        max_elapsed_time: 300s
 
-      service:
-        pipelines:
-          logs:
-            receivers: [ otlp ]
-            processors: [ memory_limiter, batch ]
-            exporters: [ clickhouse ]
-          metrics:
-            receivers: [ otlp ]
-            processors: [ memory_limiter, batch ]
-            exporters: [ clickhouse ]
-          traces:
-            receivers: [ otlp ]
-            processors: [ memory_limiter, batch ]
-            exporters: [ clickhouse ]
+  service:
+    pipelines:
+      logs:
+        receivers: [ otlp ]
+        processors: [ memory_limiter, batch ]
+        exporters: [ clickhouse ]
+      metrics:
+        receivers: [ otlp ]
+        processors: [ memory_limiter, batch ]
+        exporters: [ clickhouse ]
+      traces:
+        receivers: [ otlp ]
+        processors: [ memory_limiter, batch ]
+        exporters: [ clickhouse ]
 EOF
+
+helm install collector --namespace $NS --values.yaml /tmp/collector.yaml open-telemetry/opentelemetry-collector
