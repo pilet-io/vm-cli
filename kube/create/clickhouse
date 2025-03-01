@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#> [ns]=clickhouse [disk]=20 [log]=2
+#> [ns]=clickhouse [disk]=30 [log]=3
 
 kubectl create ns $NS --dry-run=client -o yaml | kubectl apply -f -
 
