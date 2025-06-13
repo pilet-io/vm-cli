@@ -47,7 +47,7 @@ config:
      traces:
        receivers: [otlp]
        processors: [batch]
-       exporters: [nop]
+       exporters: [kafka]
      metrics:
        receivers: [otlp]
        processors: [batch]
