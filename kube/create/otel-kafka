@@ -32,15 +32,15 @@ config:
 
   exporters:
     nop:
-#    kafka:
-#      brokers:
-#        - kafka-service.kafka:9092
-#      logs:
-#        encoding: otlp_json
-#      traces:
-#        encoding: otlp_json
-#      metrics:
-#        encoding: otlp_json
+    kafka:
+      brokers:
+        - kafka-service.kafka:9092
+      logs:
+        encoding: otlp_json
+      traces:
+        encoding: otlp_json
+      metrics:
+        encoding: otlp_json
 
   service:
    pipelines:
