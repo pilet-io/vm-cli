@@ -15,10 +15,8 @@ service:
   enabled: true
 
 presets:
-#  hostMetrics:
-#    enabled: true
-#  kubeletMetrics:
-#    enabled: true
+  hostMetrics:
+    enabled: true
 
 config:
   receivers:
@@ -33,30 +31,31 @@ config:
       timeout: 10s
 
   exporters:
-    kafka:
-      brokers:
-        - kafka-service.kafka:9092
-      logs:
-        encoding: otlp_json
-      traces:
-        encoding: otlp_json
-      metrics:
-        encoding: otlp_json
+    nop:
+#    kafka:
+#      brokers:
+#        - kafka-service.kafka:9092
+#      logs:
+#        encoding: otlp_json
+#      traces:
+#        encoding: otlp_json
+#      metrics:
+#        encoding: otlp_json
 
   service:
    pipelines:
      traces:
        receivers: [otlp]
        processors: [batch]
-       exporters: [kafka]
+       exporters: [nop]
      metrics:
        receivers: [otlp]
        processors: [batch]
-       exporters: [kafka]
+       exporters: [nop]
      logs:
        receivers: [otlp]
        processors: [batch]
-       exporters: [kafka]
+       exporters: [nop]
 EOF
 
 helm install otel open-telemetry/opentelemetry-collector --namespace $NS --values /tmp/values.yml
