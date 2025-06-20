@@ -42,7 +42,7 @@ processors:
 
 exporters:
   otlphttp:
-    endpoint: http://system.kueb.io:4318
+    endpoint: http://otel-system.kueb.io
 
 service:
 
