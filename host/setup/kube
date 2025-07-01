@@ -68,3 +68,5 @@ EOF
 
 service otelcol-contrib stop
 service otelcol-contrib start
+
+cat /etc/rancher/k3s/k3s.yaml | sed 's|127.0.0.1|${HOSTNAME}|g' | awk -v prefix='>>' '{print prefix $0}'
