@@ -93,6 +93,6 @@ spec:
       targetPort: 9092
 EOF
 
-echo "#> version=7.8.0"
-echo "#> url=kafka-service.kafka"
-echo "#> port=9092"
+echo "!> version=7.8.0"
+echo "!> url=kafka-service.kafka"
+echo "!> port=9092"

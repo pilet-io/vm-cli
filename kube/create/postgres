@@ -14,8 +14,9 @@ persistence:
 EOF
 
 helm install postgres --values /tmp/postgres.yaml --namespace $NS oci://registry-1.docker.io/bitnamicharts/postgresql
-echo "#> url=postgres.postgres"
-echo "#> port=5432"
-echo "#> username=postgres"
-echo "#> password=par0l2010"
-echo "#> disk=$DISK"
+
+echo "!> url=postgres.postgres"
+echo "!> port=5432"
+echo "!> username=postgres"
+echo "!> password=par0l2010"
+echo "!> disk=$DISK"
